@@ -37,6 +37,25 @@ We craft each project with precision, blending **design, performance, and functi
 
 ---
 
+🌐 Live Link
+<a href="">Visit-BavDev</a>
+
+---
+
+📬 Connect with Me
+<p align="center"> <a href="https://github.com/YOUR-USERNAME"><img src="https://img.shields.io/badge/GitHub-000?logo=github&logoColor=white" /></a> <a href="https://twitter.com/YOUR-TWITTER"><img src="https://img.shields.io/badge/Twitter-1DA1F2?logo=twitter&logoColor=white" /></a> <a href="https://linkedin.com/in/YOUR-LINKEDIN"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?logo=linkedin&logoColor=white" /></a> <a href="mailto:your@email.com"><img src="https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white" /></a> </p>
+
+---
+
+🏆 Show Your Support
+Give a ⭐ star if you like this project and want more amazing designs!
+
+---
+
+<p align="center">© 2025 BavDev – Built with ❤️ by Pooks</p> ```
+
+---
+
 ## 🚀 Installation & Setup
 ```bash
 # Clone the repository
@@ -51,13 +70,3 @@ npm install
 # Start the development server
 npm start
 
-🌐 Live Link
-<a href="">Visit-BavDev</a>
-
-📬 Connect with Me
-<p align="center"> <a href="https://github.com/YOUR-USERNAME"><img src="https://img.shields.io/badge/GitHub-000?logo=github&logoColor=white" /></a> <a href="https://twitter.com/YOUR-TWITTER"><img src="https://img.shields.io/badge/Twitter-1DA1F2?logo=twitter&logoColor=white" /></a> <a href="https://linkedin.com/in/YOUR-LINKEDIN"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?logo=linkedin&logoColor=white" /></a> <a href="mailto:your@email.com"><img src="https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white" /></a> </p>
-
-🏆 Show Your Support
-Give a ⭐ star if you like this project and want more amazing designs!
-
-<p align="center">© 2025 BavDev – Built with ❤️ by Pooks</p> ```
