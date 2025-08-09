@@ -33,7 +33,7 @@ We craft each project with precision, blending **design, performance, and functi
 ---
 
 ## 📷 Preview
-![BavDev Screenshot]<a href="/"><img src="./src/images/Screenshot 2025-08-10 011204.png" alt="ScreenShot"/></a>
+![BavDev Screenshot]<img src="./src/images/Screenshot 2025-08-10 011204.png" alt="ScreenShot"/>
 
 ---
 
