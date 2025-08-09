@@ -43,7 +43,7 @@ We craft each project with precision, blending **design, performance, and functi
 ---
 
 📬 Connect with Me
-<p align="center"> <a href="https://github.com/CarlosBavon"><img src="https://img.shields.io/badge/GitHub-000?logo=github&logoColor=white" /></a> <a href="https://x.com/bavon046"><img src="https://img.shields.io/badge/Twitter-1DA1F2?logo=twitter&logoColor=white" /></a> <a href="https://www.linkedin.com/in/bavon-carlos-868775367/"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?logo=linkedin&logoColor=white" /></a> <a href="mailto:carlosbavon46@gmail.com"><img src="https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white" /></a> </p>
+<p align="center"> <a href="https://github.com/CarlosBavon" target="_blank"><img src="https://img.shields.io/badge/GitHub-000?logo=github&logoColor=white" /></a> <a href="https://x.com/bavon046" target="_blank"><img src="https://img.shields.io/badge/Twitter-1DA1F2?logo=twitter&logoColor=white" /></a> <a href="https://www.linkedin.com/in/bavon-carlos-868775367/" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?logo=linkedin&logoColor=white" /></a> <a href="mailto:carlosbavon46@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white" /></a> </p>
 
 ---
 
@@ -52,7 +52,7 @@ Give a ⭐ star if you like this project and want more amazing designs!
 
 ---
 
-<p align="center">© 2025 BavDev – Built with ❤️ by Pooks</p> ```
+<p align="center">© 2025 BavDev – Built with ❤️ by Bavon</p> ```
 
 ---
 
