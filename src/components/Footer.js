@@ -17,7 +17,7 @@ export default function Footer() {
           <div className="footer__socials">
             <a href="#" aria-label="Facebook"><FaFacebookF /></a>
             <a href="#" aria-label="Twitter"><FaTwitter /></a>
-            <a href="#" aria-label="Instagram"><FaInstagram /></a>
+            <a href="https://instagram.com/bavdev_" target="_blank" aria-label="Instagram"><FaInstagram /></a>
             <a href="#" aria-label="LinkedIn"><FaLinkedinIn /></a>
             <a href="#" aria-label="GitHub"><FaGithub /></a>
             <a href="#" aria-label="YouTube"><FaYoutube /></a>
