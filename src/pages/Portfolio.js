@@ -20,7 +20,8 @@ const projectsData = [
     title: "E-Commerce App",
     category: "App Development",
     img: ResApp,
-    description: "A mobile responsive E-Commerce website."
+    description: "A mobile responsive E-Commerce website.",
+    link: "https://porky-delights.vercel.app"
   },
   {
     id: 3,
