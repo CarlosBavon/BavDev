@@ -38,7 +38,7 @@ We craft each project with precision, blending **design, performance, and functi
 ---
 
 🌐 Live Link
-<a href="https://bavdev.vercel.app">Visit-BavDev</a>
+<a href="https://bavdev.vercel.app" target="_blank">Visit-BavDev</a>
 
 ---
 
