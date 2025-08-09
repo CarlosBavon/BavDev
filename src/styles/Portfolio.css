@@ -1,0 +1,107 @@
+.portfolio {
+  padding: 50px 20px;
+  text-align: center;
+  margin-top: 100px;
+}
+
+.portfolio__title {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.portfolio__filters {
+  margin-bottom: 30px;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: 2px solid #333;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+    color: white;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background: #333;
+  color: white;
+}
+
+.portfolio__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.portfolio__item {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.portfolio__item img {
+  width: 100%;
+  height: auto;
+  transition: transform 0.4s ease;
+}
+
+.portfolio__item:hover img {
+  transform: scale(1.1);
+}
+
+.portfolio__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s ease;
+}
+
+.portfolio__item:hover .portfolio__overlay {
+  opacity: 1;
+}
+
+.portfolio__modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.portfolio__modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 600px;
+  text-align: center;
+  color: black;
+}
+
+.portfolio__modal-content img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.portfolio__modal-content a {
+    color: black;
+}
+
+.portfolio__modal-content button {
+  background: #333;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}

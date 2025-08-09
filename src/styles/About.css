@@ -1,0 +1,132 @@
+.about {
+  padding: 4rem 8%;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #f8fafc;
+  font-family: 'Poppins', sans-serif;
+}
+
+.about__hero {
+  margin-top: 100px;
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeInDown 1s ease-in-out;
+}
+
+.about__hero h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.about__hero h1 span {
+  color: #38bdf8;
+}
+
+.about__tagline {
+  font-size: 1.2rem;
+  color: #94a3b8;
+  margin-top: 0.5rem;
+}
+
+.about__content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  align-items: center;
+}
+
+.about__image {
+  flex: 1 1 350px;
+  text-align: center;
+}
+
+.about__image img {
+  width: 280px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid #38bdf8;
+  box-shadow: 0 0 40px rgba(56, 189, 248, 0.3);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.about__image img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 60px rgba(56, 189, 248, 0.5);
+}
+
+.about__text {
+  flex: 2 1 500px;
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.about__text h2 {
+  font-size: 2rem;
+  margin-bottom: 0.8rem;
+  color: #38bdf8;
+}
+
+.about__text p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #cbd5e1;
+  margin-bottom: 2rem;
+}
+
+.skills {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+  padding: 0;
+}
+
+.skills li {
+  background: rgba(56, 189, 248, 0.15);
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  transition: all 0.3s ease;
+}
+
+.skills li:hover {
+  background: rgba(56, 189, 248, 0.3);
+  transform: translateY(-3px);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .about__content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .about__text {
+    animation: fadeInUp 1s ease-in-out;
+  }
+}
