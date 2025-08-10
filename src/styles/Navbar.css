@@ -10,15 +10,9 @@
   width: 100%;
 }
 
-/* Scrolled background */
-.nav--scrolled {
-  background: rgba(4, 10, 18, 0.9);
-  box-shadow: 0 6px 24px rgba(2, 6, 12, 0.6);
-}
-
 /* Hide & show on scroll */
 .nav--hide {
-  transform: translateY(-100%);
+  transform: translateY(-150%);
 }
 
 .nav--show {

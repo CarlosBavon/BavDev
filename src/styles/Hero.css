@@ -180,8 +180,8 @@
 .screen.floating.delay {
   position: absolute;
   top: 50%;
-  left: 110%;
-  transform: translateY(-50%) rotateY(-10deg) rotateX(5deg);
+  left: 50%;
+  transform: translateY(0%) rotateY(-10deg) rotateX(5deg);
   animation-delay: 3s;
 }
 

@@ -20,7 +20,7 @@ export default function About() {
           <p>
             I’m Bavon, a passionate Web & App Developer who transforms ideas into digital realities.
             With a strong eye for design and a love for functionality, I craft solutions that blend
-            beauty and performance.
+            beauty and performance. 
           </p>
 
           <h2>Skills & Tech Stack</h2>

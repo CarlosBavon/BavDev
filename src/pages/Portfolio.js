@@ -5,6 +5,7 @@ import ECommerce from '../images/E-Commerce.png';
 import PortfolioImg from '../images/Portfolio.png';
 import ResApp from '../images/ResApp.jpg';
 import BatteryApp from '../images/BatteryApp.jpg';
+import PortLogo from '../images/LOGO.png';
 
 const projectsData = [
   {
@@ -54,6 +55,27 @@ export default function Portfolio() {
 
   return (
     <div className="portfolio">
+      <div className="portfolio-hero">
+        <div className="portfolio-about">
+          <div className="title">
+            <h1>SOFTWARE <br />DEVELOPER</h1>
+            <div className="location">
+              <p>LOCATED <br /> in <br /> KENYA</p>
+            </div>
+          </div>
+          <div class="bio-section">
+            <p class="bio">
+              I’M A DEDICATED <span style={{ color: "yellow" }}>SOFTWARE DEVELOPER WITH ONE YEAR OF EXPERIENCE</span> BUILDING RESPONSIVE WEB APPLICATIONS USING JAVASCRIPT, REACT, AND NODE.JS. I THRIVE ON SOLVING REAL-WORLD PROBLEMS THROUGH CLEAN CODE AND AM CONTINUALLY EXPANDING MY SKILLS IN FULL-STACK DEVELOPMENT.
+            </p>
+          </div>
+        </div>
+        <div className="portfolio-main-title">
+          <img src={PortLogo} alt="Portfolio-Logo"/>
+        </div>
+
+      </div>
+
+      <div class="scroll-down"></div>
       <h1 className="portfolio__title">Projects</h1>
 
       {/* Category Filters */}
@@ -95,7 +117,7 @@ export default function Portfolio() {
             <p>{modalProject.description}</p>
             <a href={modalProject.link} target="_blank" rel="noreferrer"><strong>Link:</strong> {modalProject.title}</a>
             <div>
-                <button onClick={() => setModalProject(null)}>Close</button>
+              <button onClick={() => setModalProject(null)}>Close</button>
             </div>
           </div>
         </div>
