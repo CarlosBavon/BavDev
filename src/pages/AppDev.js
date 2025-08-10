@@ -69,7 +69,6 @@ export default function AppDevelopment() {
   const portfolioRef = useRef(null);
   const heroIn = useInView(heroRef);
   const featIn = useInView(featRef);
-  const portfolioIn = useInView(portfolioRef);
 
   const [platform, setPlatform] = useState("Cross-platform");
   const [lightbox, setLightbox] = useState(null);

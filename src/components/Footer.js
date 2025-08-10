@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/Footer.css";
-import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaGithub, FaYoutube } from "react-icons/fa";
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaGithub } from "react-icons/fa";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -15,12 +15,11 @@ export default function Footer() {
             Crafting beautiful websites, powerful apps, and seamless integrations for businesses worldwide.
           </p>
           <div className="footer__socials">
-            <a href="#" aria-label="Facebook"><FaFacebookF /></a>
-            <a href="#" aria-label="Twitter"><FaTwitter /></a>
-            <a href="https://instagram.com/bavdev_" target="_blank" aria-label="Instagram"><FaInstagram /></a>
-            <a href="#" aria-label="LinkedIn"><FaLinkedinIn /></a>
-            <a href="#" aria-label="GitHub"><FaGithub /></a>
-            <a href="#" aria-label="YouTube"><FaYoutube /></a>
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook"><FaFacebookF /></a>
+            <a href="https://x.com/bavon046" target="_blank" rel="noreferrer" aria-label="Twitter"><FaTwitter /></a>
+            <a href="https://instagram.com/bavdevstudio" target="_blank" rel="noreferrer" aria-label="Instagram"><FaInstagram /></a>
+            <a href="https://www.linkedin.com/in/bavon-carlos-868775367/" target="_blank" rel="noreferrer" aria-label="LinkedIn"><FaLinkedinIn /></a>
+            <a href="https://github.com/CarlosBavon" target="_blank" rel="noreferrer" aria-label="GitHub"><FaGithub /></a>
           </div>
         </div>
 

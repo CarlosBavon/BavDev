@@ -93,7 +93,7 @@ function useInView(ref, options = { threshold: 0.15 }) {
     }, options);
     obs.observe(ref.current);
     return () => obs.disconnect();
-  }, [ref, options.threshold]);
+  }, [ref, options]);
   return inView;
 }
 

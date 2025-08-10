@@ -93,7 +93,7 @@ export default function Portfolio() {
             <img src={modalProject.img} alt={modalProject.title} />
             <h2>{modalProject.title}</h2>
             <p>{modalProject.description}</p>
-            <a href={modalProject.link} target="_blank"><strong>Link:</strong> {modalProject.title}</a>
+            <a href={modalProject.link} target="_blank" rel="noreferrer"><strong>Link:</strong> {modalProject.title}</a>
             <div>
                 <button onClick={() => setModalProject(null)}>Close</button>
             </div>
