@@ -62,7 +62,7 @@ Give a ⭐ star if you like this project and want more amazing designs!
 git clone https://github.com/CarlosBavon/BavDev.git
 
 # Navigate to the project folder
-cd BavDev
+cd bavdev
 
 # Install dependencies
 npm install
