@@ -3,15 +3,33 @@ import "../styles/Contact.css";
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [result, setResult] = React.useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("Message sent! (This can be connected to an API)");
-    setFormData({ name: "", email: "", message: "" });
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setResult("Sending....");
+    const formData = new FormData(event.target);
+
+    formData.append("access_key", "236d1e5f-8fbf-4cfc-9d6c-eabc77a88cd0");
+
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setResult("Form Submitted Successfully");
+      event.target.reset();
+    } else {
+      console.log("Error", data);
+      setResult(data.message);
+    }
   };
 
   return (
@@ -71,6 +89,8 @@ export default function Contact() {
 
           <button type="submit" className="contact-btn">Send Message</button>
         </form>
+        <span>{result}</span>
+
       </div>
     </section>
   );
