@@ -44,7 +44,7 @@ export default function Contact() {
         <div className="contact__info">
           <h2>Get in Touch</h2>
           <p>Email: <a href="mailto:carlosbavon46@gmail.com">carlosbavon46@gmail.com</a></p>
-          <p>Phone: +254 758 809 229</p>
+          <p>Phone: +254 799 657 824</p>
           <p>Location: Nairobi, Kenya</p>
 
           <iframe

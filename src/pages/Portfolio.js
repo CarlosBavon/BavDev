@@ -5,7 +5,7 @@ import ECommerce from '../images/E-Commerce.png';
 import PortfolioImg from '../images/Portfolio.png';
 import ResApp from '../images/ResApp.jpg';
 import BatteryApp from '../images/BatteryApp.jpg';
-import PortLogo from '../images/LOGO.png';
+import SkillSwap from '../images/SkillSwap.png';
 
 const projectsData = [
   {
@@ -39,6 +39,14 @@ const projectsData = [
     img: BatteryApp,
     description: "An app to track battery percentage, charging or not charging.",
     link: "https://battery-widget.vercel.app/"
+  },
+  {
+    id: 5,
+    title: "Skill Swap Hub",
+    category: "Web Development",
+    img: SkillSwap,
+    description: "A platform to connect people for skill exchange and learning.",
+    link: "https://skill-swap-beta.vercel.app/"
   }
 ];
 
@@ -58,19 +66,13 @@ export default function Portfolio() {
       <div className="portfolio-hero">
         <div className="portfolio-about">
           <div className="title">
-            <h1>SOFTWARE <br />DEVELOPER</h1>
-            <div className="location">
-              <p>LOCATED <br /> in <br /> KENYA</p>
-            </div>
+            <h1>CROSS PLATFORM <br/> SOFTWARE<br />ENGINEER/DEVELOPER</h1>
           </div>
           <div class="bio-section">
             <p class="bio">
               I’M A DEDICATED <span style={{ color: "yellow" }}>SOFTWARE DEVELOPER WITH ONE YEAR OF EXPERIENCE</span> BUILDING RESPONSIVE WEB APPLICATIONS USING JAVASCRIPT, REACT, AND NODE.JS. I THRIVE ON SOLVING REAL-WORLD PROBLEMS THROUGH CLEAN CODE AND AM CONTINUALLY EXPANDING MY SKILLS IN FULL-STACK DEVELOPMENT.
             </p>
           </div>
-        </div>
-        <div className="portfolio-main-title">
-          <img src={PortLogo} alt="Portfolio-Logo"/>
         </div>
 
       </div>

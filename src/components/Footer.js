@@ -44,7 +44,7 @@ export default function Footer() {
         <div className="footer__contact">
           <h4>Contact</h4>
           <p>Email: <a href="mailto:hello@bavdev.com">carlosbavon46@gmail.com</a></p>
-          <p>Phone: <a href="tel:+254758809229">+254 758 809 229</a></p>
+          <p>Phone: <a href="tel:+254758809229">+254 799 657 824</a></p>
           <p>Location: Nairobi, Kenya</p>
         </div>
       </div>
