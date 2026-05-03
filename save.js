@@ -1,22 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/AppDev.css";
 
-const API_URL =
-  process.env.REACT_APP_API_URL || "https://bavdev-back.onrender.com";
+const API_URL = process.env.REACT_APP_API_URL || "https://bavdev-back.onrender.com";
 
-// Helper to safely fetch JSON with fallback
-const safeFetch = async (url, fallback = []) => {
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  } catch (err) {
-    console.error(`Fetch failed for ${url}:`, err);
-    return fallback;
-  }
-};
-
-// IntersectionObserver – always visible initially
 function useInView(ref, threshold = 0.18) {
   const [inView, setInView] = useState(true);
   useEffect(() => {
@@ -39,17 +25,9 @@ export default function AppDevelopment() {
   const [testimonials, setTestimonials] = useState([]);
   const [pricingPlans, setPricingPlans] = useState([]);
   const [faqs, setFaqs] = useState([]);
-  const [metrics, setMetrics] = useState({
-    rating: { value: 4.8, suffix: "★" },
-    crashFree: { value: 99, suffix: "%" },
-    users: { value: 120000 },
-  });
+  const [metrics, setMetrics] = useState({});
   const [platform, setPlatform] = useState("Cross-platform");
-  const [platformStack, setPlatformStack] = useState({
-    recommended: "React Native / Expo",
-    cicd: "Fastlane, GitHub Actions",
-    testing: "Detox, Jest",
-  });
+  const [platformStack, setPlatformStack] = useState({});
   const [lightbox, setLightbox] = useState(null);
   const [activeTest, setActiveTest] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -60,69 +38,81 @@ export default function AppDevelopment() {
   const heroIn = useInView(heroRef);
   const featIn = useInView(featRef);
 
-  // Fetch all data – each request independently, never crashes whole UI
+  // Fetch all data from backend
   useEffect(() => {
-    const fetchAll = async () => {
-      setLoading(true);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [
+          featuresRes,
+          showcasesRes,
+          testimonialsRes,
+          pricingRes,
+          faqsRes,
+          metricsRes,
+          platformStackRes,
+        ] = await Promise.all([
+          fetch(`${API_URL}/api/app/features`),
+          fetch(`${API_URL}/api/app/showcases`),
+          fetch(`${API_URL}/api/app/testimonials`),
+          fetch(`${API_URL}/api/app/pricing`),
+          fetch(`${API_URL}/api/app/faq`),
+          fetch(`${API_URL}/api/app/metrics`),
+          fetch(`${API_URL}/api/app/platform/Cross-platform`),
+        ]);
 
-      const [
-        featuresData,
-        showcasesData,
-        testimonialsData,
-        pricingData,
-        faqsData,
-        metricsData,
-      ] = await Promise.all([
-        safeFetch(`${API_URL}/api/app/features`, []),
-        safeFetch(`${API_URL}/api/app/showcases`, []),
-        safeFetch(`${API_URL}/api/app/testimonials`, []),
-        safeFetch(`${API_URL}/api/app/pricing`, []),
-        safeFetch(`${API_URL}/api/app/faq`, []),
-        safeFetch(`${API_URL}/api/app/metrics`, {
-          rating: { value: 4.8, suffix: "★" },
-          crashFree: { value: 99, suffix: "%" },
-          users: { value: 120000 },
-        }),
-      ]);
+        const featuresData = await featuresRes.json();
+        const showcasesData = await showcasesRes.json();
+        const testimonialsData = await testimonialsRes.json();
+        const pricingData = await pricingRes.json();
+        const faqsData = await faqsRes.json();
+        const metricsData = await metricsRes.json();
+        const platformStackData = await platformStackRes.json();
 
-      setFeatures(featuresData);
-      setShowcases(showcasesData);
-      setTestimonials(testimonialsData);
-      setPricingPlans(pricingData);
-      setFaqs(faqsData);
-      setMetrics(metricsData);
-
-      setLoading(false);
+        setFeatures(featuresData);
+        setShowcases(showcasesData);
+        setTestimonials(testimonialsData);
+        setPricingPlans(pricingData);
+        setFaqs(faqsData);
+        setMetrics(metricsData);
+        setPlatformStack(platformStackData);
+      } catch (error) {
+        console.error("Error fetching app data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchAll();
+    fetchData();
   }, []);
 
   // Fetch platform-specific stack when tab changes
   useEffect(() => {
-    const fetchPlatform = async () => {
-      const data = await safeFetch(`${API_URL}/api/app/platform/${platform}`, {
-        recommended: "React Native / Expo, TypeScript",
-        cicd: "Fastlane, GitHub Actions",
-        testing: "Detox, Jest",
-      });
-      setPlatformStack(data);
+    const fetchPlatformStack = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/app/platform/${platform}`);
+        const data = await res.json();
+        setPlatformStack(data);
+      } catch (error) {
+        console.error("Error fetching platform stack:", error);
+      }
     };
-    fetchPlatform();
+    fetchPlatformStack();
   }, [platform]);
 
-  // Animate users counter
+  // Animate users count when hero comes into view
   useEffect(() => {
     if (!heroIn || !metrics.users?.value) return;
-    const target = metrics.users.value;
+    const end = metrics.users.value;
     let start = 0;
     const duration = 1200;
     const stepTime = 16;
-    const inc = Math.ceil(target / (duration / stepTime));
+    const ticks = Math.ceil(duration / stepTime);
+    const inc = Math.ceil(end / ticks);
     const id = setInterval(() => {
       start += inc;
-      if (start >= target) {
-        start = target;
+      if (start >= end) {
+        start = end;
         clearInterval(id);
       }
       setUsers(start);
@@ -130,37 +120,23 @@ export default function AppDevelopment() {
     return () => clearInterval(id);
   }, [heroIn, metrics.users?.value]);
 
-  // Auto‑rotate testimonials
+  // Auto-rotate testimonials
   useEffect(() => {
     if (testimonials.length === 0) return;
-    const interval = setInterval(() => {
-      setActiveTest((prev) => (prev + 1) % testimonials.length);
-    }, 6000);
-    return () => clearInterval(interval);
+    const t = setInterval(
+      () => setActiveTest((s) => (s + 1) % testimonials.length),
+      6000,
+    );
+    return () => clearInterval(t);
   }, [testimonials]);
 
-  // Always render – loading state only adds a subtle overlay if needed, but hero is visible immediately
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
+
   return (
     <main className="ad-page">
-      {loading && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: 20,
-            right: 20,
-            background: "#000",
-            color: "#0ff",
-            padding: "4px 12px",
-            borderRadius: 20,
-            fontSize: 12,
-            zIndex: 9999,
-          }}
-        >
-          Loading data...
-        </div>
-      )}
-
-      {/* HERO SECTION – always visible */}
+      {/* HERO */}
       <section className={`ad-hero ${heroIn ? "in" : ""}`} ref={heroRef}>
         <div className="ad-hero__wrap">
           <div className="ad-hero__text">
@@ -169,9 +145,10 @@ export default function AppDevelopment() {
               scale reliably.
             </h1>
             <p className="muted">
-              Native features, seamless performance, and product‑first mobile
+              Native features, seamless performance, and product-first mobile
               experiences for iOS & Android.
             </p>
+
             <div className="ad-hero__ctas">
               <a href="#contact-form" className="btn primary">
                 Start Your App
@@ -180,6 +157,7 @@ export default function AppDevelopment() {
                 See Work
               </a>
             </div>
+
             <div className="ad-hero__stats">
               <div className="stat">
                 <div className="num">{users.toLocaleString()}</div>
@@ -197,31 +175,20 @@ export default function AppDevelopment() {
                   {metrics.crashFree?.value || 99}
                   {metrics.crashFree?.suffix || "%"}
                 </div>
-                <div className="label">Crash‑free sessions</div>
+                <div className="label">Crash-free sessions</div>
               </div>
             </div>
           </div>
+
           <div className="ad-hero__visual" aria-hidden="true">
             <div className="phone-mockup">
-              {showcases[0] && showcases[0].image && (
-                <img
-                  src={`${API_URL}${showcases[0].image}`}
-                  alt="mobile ui"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
+              {showcases[0] && (
+                <img src={`${API_URL}${showcases[0].image}`} alt="mobile ui" />
               )}
             </div>
             <div className="tablet-mockup">
-              {showcases[1] && showcases[1].image && (
-                <img
-                  src={`${API_URL}${showcases[1].image}`}
-                  alt="tablet ui"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
+              {showcases[1] && (
+                <img src={`${API_URL}${showcases[1].image}`} alt="tablet ui" />
               )}
             </div>
           </div>
@@ -233,13 +200,14 @@ export default function AppDevelopment() {
         <div className="container">
           <h2>What we build for mobile</h2>
           <p className="muted">
-            From consumer apps to mission‑critical enterprise tooling — we
+            From consumer apps to mission-critical enterprise tooling — we
             design for retention and growth.
           </p>
+
           <div className="features-grid">
             {features.map((f) => (
-              <article className="feature" key={f._id || f.title}>
-                <div className="ic">{f.icon || "📱"}</div>
+              <article className="feature" key={f._id}>
+                <div className="ic">{f.icon}</div>
                 <h3>{f.title}</h3>
                 <p>{f.description}</p>
                 <a className="link" href="#contact-form">
@@ -266,32 +234,27 @@ export default function AppDevelopment() {
               </button>
             ))}
           </div>
+
           <div className="platform-content">
             <div className="plat-grid">
               <div>
                 <strong>Recommended stack</strong>
-                <p className="muted">
-                  {platformStack.recommended || "React Native / Expo"}
-                </p>
+                <p className="muted">{platformStack.recommended}</p>
               </div>
               <div>
                 <strong>CI / CD</strong>
-                <p className="muted">
-                  {platformStack.cicd || "Fastlane, GitHub Actions"}
-                </p>
+                <p className="muted">{platformStack.cicd}</p>
               </div>
               <div>
                 <strong>Testing</strong>
-                <p className="muted">
-                  {platformStack.testing || "Detox, Jest"}
-                </p>
+                <p className="muted">{platformStack.testing}</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SHOWCASE */}
+      {/* SHOWCASE / CASE STUDIES */}
       <section className="ad-showcase" id="showcase">
         <div className="container">
           <h2>Selected app work</h2>
@@ -305,19 +268,13 @@ export default function AppDevelopment() {
                 role="button"
               >
                 <div className="case-media">
-                  <img
-                    src={`${API_URL}${s.image}`}
-                    alt={s.title}
-                    onError={(e) => {
-                      e.target.src = "/fallback.png";
-                    }}
-                  />
+                  <img src={`${API_URL}${s.image}`} alt={s.title} />
                 </div>
                 <div className="case-body">
                   <h3>{s.title}</h3>
                   <p className="muted">{s.summary}</p>
                   <div className="tags">
-                    {s.bullets?.map((b, i) => (
+                    {s.bullets.map((b, i) => (
                       <span key={i} className="tag">
                         {b}
                       </span>
@@ -344,7 +301,7 @@ export default function AppDevelopment() {
             <h3>{lightbox.title}</h3>
             <p>{lightbox.summary}</p>
             <ul>
-              {lightbox.bullets?.map((b, i) => (
+              {lightbox.bullets.map((b, i) => (
                 <li key={i}>{b}</li>
               ))}
             </ul>
@@ -360,7 +317,7 @@ export default function AppDevelopment() {
         </div>
       )}
 
-      {/* QUALITY */}
+      {/* CI/CD + Quality (static section) */}
       <section className="ad-quality">
         <div className="container">
           <h2>Quality, CI/CD & Monitoring</h2>
@@ -431,7 +388,7 @@ export default function AppDevelopment() {
                 <h3>{pack.name}</h3>
                 <div className="price">{pack.price}</div>
                 <ul>
-                  {pack.features?.map((f, idx) => (
+                  {pack.features.map((f, idx) => (
                     <li key={idx}>{f}</li>
                   ))}
                 </ul>
@@ -460,7 +417,7 @@ export default function AppDevelopment() {
         </div>
       </section>
 
-      {/* CONTACT FORM */}
+      {/* CONTACT FORM - ADD THIS */}
       <section className="ad-contact-form" id="contact-form">
         <div className="container">
           <h2>Start Your Project</h2>
@@ -469,21 +426,23 @@ export default function AppDevelopment() {
               e.preventDefault();
               const formData = new FormData(e.target);
               const data = Object.fromEntries(formData);
+
               try {
-                const res = await fetch(`${API_URL}/api/contact/message`, {
+                const response = await fetch(`${API_URL}/api/contact/message`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(data),
                 });
-                if (res.ok) {
-                  alert("✅ Message sent! We'll contact you soon.");
+
+                if (response.ok) {
+                  alert("Message sent successfully! We will contact you soon.");
                   e.target.reset();
                 } else {
-                  alert("❌ Failed to send. Please try again.");
+                  alert("Error sending message. Please try again.");
                 }
-              } catch (err) {
-                console.error(err);
-                alert("❌ Network error. Check your connection.");
+              } catch (error) {
+                console.error("Error:", error);
+                alert("Error sending message. Please try again.");
               }
             }}
           >
