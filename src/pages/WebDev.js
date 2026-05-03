@@ -1,89 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/WebDev.css";
-import BavBites from '../images/BavBites.png';
-import Meetly from '../images/Meetly.png';
-import Dash from '../images/Dash.png';
 
-/* ---------------------------
-  Sample data (replace images/text)
-----------------------------*/
-const features = [
-  {
-    id: 1,
-    title: "Responsive & Adaptive UI",
-    desc: "Pixel-perfect responsive designs that look great on every device.",
-  },
-  {
-    id: 2,
-    title: "High Performance",
-    desc: "Optimized bundles, code-splitting, lazy loading and caching strategies.",
-  },
-  {
-    id: 3,
-    title: "Progressive Web Apps",
-    desc: "Offline-capable, installable PWAs with push notifications and fast load times.",
-  },
-  {
-    id: 4,
-    title: "Headless CMS + APIs",
-    desc: "Integrate modern headless CMS and robust REST/MongoDB APIs for content and data.",
-  },
-];
-
-const tech = {
-  Frontend: ["React", "Next.js", "TypeScript", "Tailwind (optional)"],
-  Backend: ["Node.js", "Express", "NestJS", "MongoDB", "Postgres"],
-  Mobile: ["React Native", "Expo", "Flutter", "Kotlin"],
-};
-
-const projects = [
-  {
-    id: 1,
-    title: "BavBites — E-commerce Platform",
-    category: "Web",
-    img: BavBites,
-    summary:
-      "Full-stack e-commerce with product variants, payments, inventory, and admin dashboard.",
-    bullets: ["React + Next.js", "Stripe Payments", "Serverless APIs"],
-  },
-  {
-    id: 2,
-    title: "Meetly — Event Booking",
-    category: "Web",
-    img: Meetly,
-    summary: "Booking system with real-time availability and calendar sync.",
-    bullets: ["React", "Socket.io", "Postgres"],
-  },
-  {
-    id: 3,
-    title: "Dashlytics — Analytics Dashboard",
-    category: "Web",
-    img: Dash,
-    summary: "Custom dashboards with charts, user permissions and export features.",
-    bullets: ["React", "Charting", "Role-based Auth"],
-  },
-];
-
-const testimonials = [
-  {
-    id: 1,
-    name: "Amina K.",
-    title: "Founder — RetailCo",
-    quote:
-      "Bavon built our storefront in record time. Conversion rate jumped 38% within 6 weeks.",
-  },
-  {
-    id: 2,
-    name: "Daniel M.",
-    title: "CTO — FinApp",
-    quote:
-      "Reliable and fast — excellent communication and technical depth. Highly recommend.",
-  },
-];
-
-/* ---------------------------
-  Helpers
-----------------------------*/
 function useInView(ref, options = { threshold: 0.15 }) {
   const [inView, setInView] = useState(false);
   useEffect(() => {
@@ -97,10 +14,10 @@ function useInView(ref, options = { threshold: 0.15 }) {
   return inView;
 }
 
-/* Simple counter hook */
 function useCount(target, duration = 1400) {
   const [value, setValue] = useState(0);
   useEffect(() => {
+    if (!target) return;
     let start = null;
     const step = (timestamp) => {
       if (!start) start = timestamp;
@@ -113,13 +30,21 @@ function useCount(target, duration = 1400) {
   return value;
 }
 
-/* ---------------------------
-  Main Page
-----------------------------*/
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
 export default function WebDevelopment() {
+  const [features, setFeatures] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
+  const [pricingPlans, setPricingPlans] = useState([]);
+  const [faqs, setFaqs] = useState([]);
+  const [techTabs, setTechTabs] = useState({});
+  const [metrics, setMetrics] = useState({});
   const [techTab, setTechTab] = useState("Frontend");
   const [lightbox, setLightbox] = useState(null);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [loading, setLoading] = useState(true);
+
   const heroRef = useRef(null);
   const featuresRef = useRef(null);
   const metricsRef = useRef(null);
@@ -127,34 +52,98 @@ export default function WebDevelopment() {
   const heroIn = useInView(heroRef);
   const featuresIn = useInView(featuresRef);
 
-  const projectsCount = projects.length;
-  const clientsCount = useCount(27); // pretend numbers
-  const launchesCount = useCount(54);
-
-  /* simple testimonial rotation */
+  // Fetch all data from backend
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // Fetch all data in parallel
+        const [
+          featuresRes,
+          projectsRes,
+          testimonialsRes,
+          pricingRes,
+          faqsRes,
+          techRes,
+          metricsRes,
+        ] = await Promise.all([
+          fetch(`${API_URL}/api/web/features`),
+          fetch(`${API_URL}/api/web/projects`),
+          fetch(`${API_URL}/api/web/testimonials`),
+          fetch(`${API_URL}/api/web/pricing`),
+          fetch(`${API_URL}/api/web/faq`),
+          fetch(`${API_URL}/api/web/tech`),
+          fetch(`${API_URL}/api/web/metrics`),
+        ]);
+
+        const featuresData = await featuresRes.json();
+        const projectsData = await projectsRes.json();
+        const testimonialsData = await testimonialsRes.json();
+        const pricingData = await pricingRes.json();
+        const faqsData = await faqsRes.json();
+        const techData = await techRes.json();
+        const metricsData = await metricsRes.json();
+
+        setFeatures(featuresData);
+        setProjects(projectsData);
+        setTestimonials(testimonialsData);
+        setPricingPlans(pricingData);
+        setFaqs(faqsData);
+
+        // Group tech by category
+        const techByCategory = techData.reduce((acc, tech) => {
+          if (!acc[tech.category]) acc[tech.category] = [];
+          acc[tech.category].push(tech);
+          return acc;
+        }, {});
+        setTechTabs(techByCategory);
+
+        setMetrics(metricsData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const projectsCount = metrics.projects?.value || 0;
+  const clientsCount = useCount(metrics.clients?.value || 0);
+  const launchesCount = useCount(metrics.launches?.value || 0);
+
+  // Auto-rotate testimonials
+  useEffect(() => {
+    if (testimonials.length === 0) return;
     const t = setInterval(() => {
       setActiveTestimonial((n) => (n + 1) % testimonials.length);
     }, 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [testimonials]);
+
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
 
   return (
     <main className="wd-page">
-      {/* Hero */}
+      {/* Hero section - similar but using fetched data */}
       <section className="wd-hero" ref={heroRef}>
         <div className={`wd-hero__inner ${heroIn ? "in" : ""}`}>
           <div className="wd-hero__copy">
             <h1>
-              Web Development that ships fast — <span>scales</span> and converts.
+              Web Development that ships fast — <span>scales</span> and
+              converts.
             </h1>
             <p className="muted">
-              From lean landing pages to full-scale web platforms — we craft resilient, fast,
-              maintainable web products with modern stacks.
+              From lean landing pages to full-scale web platforms — we craft
+              resilient, fast, maintainable web products with modern stacks.
             </p>
 
             <div className="wd-hero__ctas">
-              <a className="btn primary" href="#contact">
+              <a className="btn primary" href="#contact-form">
                 Get a Quote
               </a>
               <a className="btn ghost" href="#portfolio">
@@ -163,36 +152,38 @@ export default function WebDevelopment() {
             </div>
 
             <div className="wd-hero__badges">
-              <div className="badge">React</div>
-              <div className="badge">Next.js</div>
-              <div className="badge">Node</div>
-              <div className="badge">PWAs</div>
+              {techTabs.Frontend?.slice(0, 4).map((tech, idx) => (
+                <div className="badge" key={idx}>
+                  {tech.name}
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="wd-hero__visual" aria-hidden="true">
-            {/* Device mock + small UI screenshot */}
             <div className="device">
-              <img
-                src={BavBites}
-                alt="App screenshot"
-              />
+              {projects[0] && (
+                <img
+                  src={`${API_URL}${projects[0].image}`}
+                  alt="App screenshot"
+                />
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
+      {/* Features section - dynamic */}
       <section className="wd-features" ref={featuresRef}>
         <div className={`wd-features__inner ${featuresIn ? "in" : ""}`}>
           <h2>What we build</h2>
           <div className="grid features-grid">
             {features.map((f) => (
-              <article className="feature-cards" key={f.id}>
-                <div className="feature-icon">🚀</div>
+              <article className="feature-cards" key={f._id}>
+                <div className="feature-icon">{f.icon}</div>
                 <h3>{f.title}</h3>
-                <p>{f.desc}</p>
-                <a className="link" href="#contact">
+                <p>{f.description}</p>
+                <a className="link" href="#contact-form">
                   Request this
                 </a>
               </article>
@@ -201,12 +192,12 @@ export default function WebDevelopment() {
         </div>
       </section>
 
-      {/* Tech Stack Tabs */}
+      {/* Tech Stack Tabs - dynamic */}
       <section className="wd-tech">
         <div className="wd-tech__inner">
           <h2>Tech Stack</h2>
           <div className="tabs">
-            {Object.keys(tech).map((k) => (
+            {Object.keys(techTabs).map((k) => (
               <button
                 key={k}
                 className={`tab ${techTab === k ? "active" : ""}`}
@@ -219,12 +210,12 @@ export default function WebDevelopment() {
           </div>
 
           <div className="tech-list">
-            {tech[techTab].map((t) => (
-              <div className="tech-pill" key={t}>
-                <div className="tech-icon">⚙️</div>
+            {techTabs[techTab]?.map((t) => (
+              <div className="tech-pill" key={t._id}>
+                <div className="tech-icon">{t.icon || "⚙️"}</div>
                 <div>
-                  <strong>{t}</strong>
-                  <div className="muted">Proven in production</div>
+                  <strong>{t.name}</strong>
+                  <div className="muted">{t.description}</div>
                 </div>
               </div>
             ))}
@@ -232,7 +223,7 @@ export default function WebDevelopment() {
         </div>
       </section>
 
-      {/* Metrics */}
+      {/* Metrics - dynamic */}
       <section className="wd-metrics" ref={metricsRef}>
         <div className="wd-metrics__inner">
           <div className="metric">
@@ -250,20 +241,21 @@ export default function WebDevelopment() {
         </div>
       </section>
 
-      {/* Case Studies / Portfolio */}
+      {/* Projects Portfolio - dynamic */}
       <section className="wd-portfolio" id="portfolio">
         <div className="wd-portfolio__inner">
           <div className="portfolio-header">
             <h2>Selected Case Studies</h2>
             <p className="muted">
-              Work that demonstrates the technical breadth and product thinking we bring.
+              Work that demonstrates the technical breadth and product thinking
+              we bring.
             </p>
           </div>
 
           <div className="grid portfolio-grid">
             {projects.map((p) => (
               <article
-                key={p.id}
+                key={p._id}
                 className="project-card"
                 onClick={() => setLightbox(p)}
                 role="button"
@@ -271,7 +263,7 @@ export default function WebDevelopment() {
                 onKeyDown={(e) => e.key === "Enter" && setLightbox(p)}
               >
                 <div className="project-media">
-                  <img src={p.img} alt={p.title} />
+                  <img src={`${API_URL}${p.image}`} alt={p.title} />
                 </div>
                 <div className="project-body">
                   <h3>{p.title}</h3>
@@ -290,7 +282,7 @@ export default function WebDevelopment() {
         </div>
       </section>
 
-      {/* Lightbox */}
+      {/* Lightbox - same as before but using fetched data */}
       {lightbox && (
         <div className="lightbox" onClick={() => setLightbox(null)}>
           <div
@@ -300,10 +292,13 @@ export default function WebDevelopment() {
             aria-modal="true"
             aria-label={`${lightbox.title} case study`}
           >
-            <button className="lightbox__close" onClick={() => setLightbox(null)}>
+            <button
+              className="lightbox__close"
+              onClick={() => setLightbox(null)}
+            >
               ✕
             </button>
-            <img src={lightbox.img} alt={lightbox.title} />
+            <img src={`${API_URL}${lightbox.image}`} alt={lightbox.title} />
             <h3>{lightbox.title}</h3>
             <p>{lightbox.summary}</p>
             <ul>
@@ -312,10 +307,10 @@ export default function WebDevelopment() {
               ))}
             </ul>
             <div className="lightbox__actions">
-              <a className="btn primary" href="#contact">
+              <a className="btn primary" href="#contact-form">
                 Start Similar Project
               </a>
-              <a className="btn ghost" href="/contact">
+              <a className="btn ghost" href="#contact-form">
                 Ask a Question
               </a>
             </div>
@@ -323,7 +318,7 @@ export default function WebDevelopment() {
         </div>
       )}
 
-      {/* Process */}
+      {/* Process section - static (can be made dynamic if needed) */}
       <section className="wd-process">
         <div className="wd-process__inner">
           <h2>Our Process</h2>
@@ -348,111 +343,128 @@ export default function WebDevelopment() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="wd-testimonials">
-        <div className="wd-testimonials__inner">
-          <h2>What clients say</h2>
-          <div className="testimonial-card">
-            <p className="quote">“{testimonials[activeTestimonial].quote}”</p>
-            <div className="author">
-              <strong>{testimonials[activeTestimonial].name}</strong>
-              <span className="muted">{testimonials[activeTestimonial].title}</span>
-            </div>
-            <div className="dots">
-              {testimonials.map((t, i) => (
-                <button
-                  key={t.id}
-                  className={`dot ${i === activeTestimonial ? "active" : ""}`}
-                  onClick={() => setActiveTestimonial(i)}
-                  aria-label={`Show testimonial ${i + 1}`}
-                />
-              ))}
+      {/* Testimonials - dynamic */}
+      {testimonials.length > 0 && (
+        <section className="wd-testimonials">
+          <div className="wd-testimonials__inner">
+            <h2>What clients say</h2>
+            <div className="testimonial-card">
+              <p className="quote">“{testimonials[activeTestimonial].quote}”</p>
+              <div className="author">
+                <strong>{testimonials[activeTestimonial].name}</strong>
+                <span className="muted">
+                  {testimonials[activeTestimonial].title}
+                </span>
+              </div>
+              <div className="dots">
+                {testimonials.map((t, i) => (
+                  <button
+                    key={t._id}
+                    className={`dot ${i === activeTestimonial ? "active" : ""}`}
+                    onClick={() => setActiveTestimonial(i)}
+                    aria-label={`Show testimonial ${i + 1}`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Pricing */}
+      {/* Pricing - dynamic */}
       <section className="wd-pricing">
         <div className="wd-pricing__inner">
           <h2>Pricing (starting)</h2>
           <div className="grid pricing-grid">
-            <div className="price-card">
-              <div className="price-header">Starter</div>
-              <div className="price-amount">KES 50k</div>
-              <ul>
-                <li>Landing page</li>
-                <li>Responsive</li>
-                <li>Basic SEO</li>
-              </ul>
-              <a className="btn primary" href="#contact">
-                Get Starter
-              </a>
-            </div>
-
-            <div className="price-card featured">
-              <div className="price-header">Business</div>
-              <div className="price-amount">KES 100k</div>
-              <ul>
-                <li>Custom web app</li>
-                <li>Auth & DB</li>
-                <li>3 months support</li>
-              </ul>
-              <a className="btn primary" href="#contact">
-                Get Business
-              </a>
-            </div>
-
-            <div className="price-card">
-              <div className="price-header">Enterprise</div>
-              <div className="price-amount">Custom</div>
-              <ul>
-                <li>Scalable architecture</li>
-                <li>Integrations</li>
-                <li>Dedicated team</li>
-              </ul>
-              <a className="btn ghost" href="#contact">
-                Contact Sales
-              </a>
-            </div>
+            {pricingPlans.map((plan) => (
+              <div
+                key={plan._id}
+                className={`price-card ${plan.featured ? "featured" : ""}`}
+              >
+                <div className="price-header">{plan.name}</div>
+                <div className="price-amount">{plan.price}</div>
+                <ul>
+                  {plan.features.map((feature, idx) => (
+                    <li key={idx}>{feature}</li>
+                  ))}
+                </ul>
+                <a className={`btn ${plan.buttonVariant}`} href="#contact-form">
+                  {plan.buttonText}
+                </a>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* FAQ - dynamic */}
       <section className="wd-faq">
         <div className="wd-faq__inner">
           <h2>Frequently asked</h2>
-          <details>
-            <summary>How long does a typical project take?</summary>
-            <p>Depends on scope — landing pages (1–2 weeks), mid-size apps (6–12 weeks).</p>
-          </details>
-
-          <details>
-            <summary>Do you offer maintenance?</summary>
-            <p>Yes — we have monthly support packages and SLA options.</p>
-          </details>
-
-          <details>
-            <summary>Which payment methods do you accept?</summary>
-            <p>Bank transfer, M-Pesa, PayPal (for international clients), Card Payments.</p>
-          </details>
+          {faqs.map((faq) => (
+            <details key={faq._id}>
+              <summary>{faq.question}</summary>
+              <p>{faq.answer}</p>
+            </details>
+          ))}
         </div>
       </section>
 
-      {/* Sticky Contact CTA */}
-      <aside className="wd-contact-cta" id="contact">
-        <div className="cta-inner">
-          <div>
-            <strong>Ready to build?</strong>
-            <div className="muted">Tell us about your idea — we’ll handle the rest.</div>
-          </div>
-          <a className="btn primary" href="#contact-form">
-            Start Project
-          </a>
+      {/* Contact Form Section - ADD THIS */}
+      <section className="wd-contact-form" id="contact-form">
+        <div className="wd-contact-form__inner">
+          <h2>Start Your Project</h2>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const data = Object.fromEntries(formData);
+
+              try {
+                const response = await fetch(`${API_URL}/api/contact/message`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                  alert("Message sent successfully! We will contact you soon.");
+                  e.target.reset();
+                } else {
+                  alert("Error sending message. Please try again.");
+                }
+              } catch (error) {
+                console.error("Error:", error);
+                alert("Error sending message. Please try again.");
+              }
+            }}
+          >
+            <input type="text" name="name" placeholder="Your Name" required />
+            <input
+              type="email"
+              name="email"
+              placeholder="Your Email"
+              required
+            />
+            <input type="tel" name="phone" placeholder="Phone Number" />
+            <select name="projectType" required>
+              <option value="web">Web Development</option>
+              <option value="app">App Development</option>
+              <option value="both">Both</option>
+            </select>
+            <input type="text" name="budget" placeholder="Budget Range" />
+            <textarea
+              name="message"
+              placeholder="Tell us about your project"
+              rows="5"
+              required
+            ></textarea>
+            <button type="submit" className="btn primary">
+              Send Message
+            </button>
+          </form>
         </div>
-      </aside>
+      </section>
     </main>
   );
 }
-

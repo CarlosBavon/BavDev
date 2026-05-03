@@ -1,62 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../styles/AppDev.css";
-import MobileUI from '../images/MobileUI.png';
-import TabletUI from '../images/TabletUI.png';
-import TableEase from '../images/TableEase.png';
-import FitPulse from '../images/FitPulse.png';
 
-const features = [
-  {
-    id: 1,
-    title: "Cross-platform Performance",
-    desc: "Single codebase with native-grade performance using React Native or Flutter.",
-  },
-  {
-    id: 2,
-    title: "Native Integrations",
-    desc: "Camera, push notifications, background tasks, geolocation and payments.",
-  },
-  {
-    id: 3,
-    title: "Scalable Architecture",
-    desc: "Clean state management, modular components, and testable services.",
-  },
-  {
-    id: 4,
-    title: "App Store Optimization",
-    desc: "Optimized store listing, assets and A/B testing to maximize downloads.",
-  },
-];
-
-const showcases = [
-  {
-    id: 1,
-    title: "TableEase — Restaurant Reservations",
-    img: TableEase,
-    bullets: ["React Native", "Realtime Availability", "Stripe"],
-    summary: "Booking flow, calendar sync, push reminders and owner dashboard."
-  },
-  {
-    id: 2,
-    title: "FitPulse — Fitness Tracking",
-    img: FitPulse,
-    bullets: ["Flutter", "Background Tracking", "Charts"],
-    summary: "Activity tracking, goals, leaderboard and wearable sync."
-  },
-];
-
-const testimonials = [
-  { id: 1, name: "Samira", role: "Founder", quote: "App delivered with polish — retention improved 46%." },
-  { id: 2, name: "Owen", role: "Product Lead", quote: "Great at bridging product and engineering." },
-];
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 function useInView(ref, threshold = 0.18) {
-  const [inView, setInView] = useState(false);
+  const [inView, setInView] = useState(true);
   useEffect(() => {
     if (!ref.current) return;
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) setInView(true);
-    }, { threshold });
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) setInView(true);
+      },
+      { threshold },
+    );
     obs.observe(ref.current);
     return () => obs.disconnect();
   }, [ref, threshold]);
@@ -64,40 +20,119 @@ function useInView(ref, threshold = 0.18) {
 }
 
 export default function AppDevelopment() {
+  const [features, setFeatures] = useState([]);
+  const [showcases, setShowcases] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
+  const [pricingPlans, setPricingPlans] = useState([]);
+  const [faqs, setFaqs] = useState([]);
+  const [metrics, setMetrics] = useState({});
+  const [platform, setPlatform] = useState("Cross-platform");
+  const [platformStack, setPlatformStack] = useState({});
+  const [lightbox, setLightbox] = useState(null);
+  const [activeTest, setActiveTest] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState(0);
+
   const heroRef = useRef(null);
   const featRef = useRef(null);
-  const portfolioRef = useRef(null);
   const heroIn = useInView(heroRef);
   const featIn = useInView(featRef);
 
-  const [platform, setPlatform] = useState("Cross-platform");
-  const [lightbox, setLightbox] = useState(null);
-  const [activeTest, setActiveTest] = useState(0);
-
+  // Fetch all data from backend
   useEffect(() => {
-    const t = setInterval(() => setActiveTest(s => (s + 1) % testimonials.length), 6000);
-    return () => clearInterval(t);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [
+          featuresRes,
+          showcasesRes,
+          testimonialsRes,
+          pricingRes,
+          faqsRes,
+          metricsRes,
+          platformStackRes,
+        ] = await Promise.all([
+          fetch(`${API_URL}/api/app/features`),
+          fetch(`${API_URL}/api/app/showcases`),
+          fetch(`${API_URL}/api/app/testimonials`),
+          fetch(`${API_URL}/api/app/pricing`),
+          fetch(`${API_URL}/api/app/faq`),
+          fetch(`${API_URL}/api/app/metrics`),
+          fetch(`${API_URL}/api/app/platform/Cross-platform`),
+        ]);
+
+        const featuresData = await featuresRes.json();
+        const showcasesData = await showcasesRes.json();
+        const testimonialsData = await testimonialsRes.json();
+        const pricingData = await pricingRes.json();
+        const faqsData = await faqsRes.json();
+        const metricsData = await metricsRes.json();
+        const platformStackData = await platformStackRes.json();
+
+        setFeatures(featuresData);
+        setShowcases(showcasesData);
+        setTestimonials(testimonialsData);
+        setPricingPlans(pricingData);
+        setFaqs(faqsData);
+        setMetrics(metricsData);
+        setPlatformStack(platformStackData);
+      } catch (error) {
+        console.error("Error fetching app data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  /* simple animated numbers */
-  const [users, setUsers] = useState(0);
+  // Fetch platform-specific stack when tab changes
   useEffect(() => {
-    let id;
-    if (heroIn) {
-      let start = 0, end = 120000, duration = 1200, stepTime = 16;
-      const ticks = Math.ceil(duration / stepTime);
-      const inc = Math.ceil((end - start) / ticks);
-      id = setInterval(() => {
-        start += inc;
-        if (start >= end) {
-          start = end;
-          clearInterval(id);
-        }
-        setUsers(start);
-      }, stepTime);
-    }
+    const fetchPlatformStack = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/app/platform/${platform}`);
+        const data = await res.json();
+        setPlatformStack(data);
+      } catch (error) {
+        console.error("Error fetching platform stack:", error);
+      }
+    };
+    fetchPlatformStack();
+  }, [platform]);
+
+  // Animate users count when hero comes into view
+  useEffect(() => {
+    if (!heroIn || !metrics.users?.value) return;
+    const end = metrics.users.value;
+    let start = 0;
+    const duration = 1200;
+    const stepTime = 16;
+    const ticks = Math.ceil(duration / stepTime);
+    const inc = Math.ceil(end / ticks);
+    const id = setInterval(() => {
+      start += inc;
+      if (start >= end) {
+        start = end;
+        clearInterval(id);
+      }
+      setUsers(start);
+    }, stepTime);
     return () => clearInterval(id);
-  }, [heroIn]);
+  }, [heroIn, metrics.users?.value]);
+
+  // Auto-rotate testimonials
+  useEffect(() => {
+    if (testimonials.length === 0) return;
+    const t = setInterval(
+      () => setActiveTest((s) => (s + 1) % testimonials.length),
+      6000,
+    );
+    return () => clearInterval(t);
+  }, [testimonials]);
+
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
 
   return (
     <main className="ad-page">
@@ -105,12 +140,22 @@ export default function AppDevelopment() {
       <section className={`ad-hero ${heroIn ? "in" : ""}`} ref={heroRef}>
         <div className="ad-hero__wrap">
           <div className="ad-hero__text">
-            <h1>App Development that delights users — <span>launch fast</span>, scale reliably.</h1>
-            <p className="muted">Native features, seamless performance, and product-first mobile experiences for iOS & Android.</p>
+            <h1>
+              App Development that delights users — <span>launch fast</span>,
+              scale reliably.
+            </h1>
+            <p className="muted">
+              Native features, seamless performance, and product-first mobile
+              experiences for iOS & Android.
+            </p>
 
             <div className="ad-hero__ctas">
-              <a href="#contact" className="btn primary">Start Your App</a>
-              <a href="#showcase" className="btn ghost">See Work</a>
+              <a href="#contact-form" className="btn primary">
+                Start Your App
+              </a>
+              <a href="#showcase" className="btn ghost">
+                See Work
+              </a>
             </div>
 
             <div className="ad-hero__stats">
@@ -119,11 +164,17 @@ export default function AppDevelopment() {
                 <div className="label">Active users (sample)</div>
               </div>
               <div className="stat">
-                <div className="num">4.8★</div>
+                <div className="num">
+                  {metrics.rating?.value || 4.8}
+                  {metrics.rating?.suffix || "★"}
+                </div>
                 <div className="label">Avg Store Rating</div>
               </div>
               <div className="stat">
-                <div className="num">99%</div>
+                <div className="num">
+                  {metrics.crashFree?.value || 99}
+                  {metrics.crashFree?.suffix || "%"}
+                </div>
                 <div className="label">Crash-free sessions</div>
               </div>
             </div>
@@ -131,10 +182,14 @@ export default function AppDevelopment() {
 
           <div className="ad-hero__visual" aria-hidden="true">
             <div className="phone-mockup">
-              <img src={MobileUI} alt="mobile ui" />
+              {showcases[0] && (
+                <img src={`${API_URL}${showcases[0].image}`} alt="mobile ui" />
+              )}
             </div>
             <div className="tablet-mockup">
-              <img src={TabletUI} alt="tablet ui" />
+              {showcases[1] && (
+                <img src={`${API_URL}${showcases[1].image}`} alt="tablet ui" />
+              )}
             </div>
           </div>
         </div>
@@ -144,15 +199,20 @@ export default function AppDevelopment() {
       <section className={`ad-features ${featIn ? "in" : ""}`} ref={featRef}>
         <div className="container">
           <h2>What we build for mobile</h2>
-          <p className="muted">From consumer apps to mission-critical enterprise tooling — we design for retention and growth.</p>
+          <p className="muted">
+            From consumer apps to mission-critical enterprise tooling — we
+            design for retention and growth.
+          </p>
 
           <div className="features-grid">
-            {features.map(f => (
-              <article className="feature" key={f.id}>
-                <div className="ic">📱</div>
+            {features.map((f) => (
+              <article className="feature" key={f._id}>
+                <div className="ic">{f.icon}</div>
                 <h3>{f.title}</h3>
-                <p>{f.desc}</p>
-                <a className="link" href="#contact">Request</a>
+                <p>{f.description}</p>
+                <a className="link" href="#contact-form">
+                  Request
+                </a>
               </article>
             ))}
           </div>
@@ -164,52 +224,61 @@ export default function AppDevelopment() {
         <div className="container">
           <h2>Platform & tools</h2>
           <div className="platform-tabs">
-            {["Cross-platform","iOS Native","Android Native"].map(p => (
-              <button key={p} className={`plat ${platform === p ? "active" : ""}`} onClick={() => setPlatform(p)}>{p}</button>
+            {["Cross-platform", "iOS Native", "Android Native"].map((p) => (
+              <button
+                key={p}
+                className={`plat ${platform === p ? "active" : ""}`}
+                onClick={() => setPlatform(p)}
+              >
+                {p}
+              </button>
             ))}
           </div>
 
           <div className="platform-content">
-            {platform === "Cross-platform" && (
-              <div className="plat-grid">
-                <div><strong>Recommended stack</strong><p className="muted">React Native / Expo, TypeScript, Redux/MobX, Jest</p></div>
-                <div><strong>CI / CD</strong><p className="muted">Fastlane, GitHub Actions, TestFlight / Play Console</p></div>
-                <div><strong>Testing</strong><p className="muted">Unit, E2E (Detox), UI tests</p></div>
+            <div className="plat-grid">
+              <div>
+                <strong>Recommended stack</strong>
+                <p className="muted">{platformStack.recommended}</p>
               </div>
-            )}
-            {platform === "iOS Native" && (
-              <div className="plat-grid">
-                <div><strong>Recommended stack</strong><p className="muted">Swift, Combine, SwiftUI</p></div>
-                <div><strong>CI / CD</strong><p className="muted">Bitrise, Fastlane</p></div>
-                <div><strong>Testing</strong><p className="muted">XCTest, Snapshot tests</p></div>
+              <div>
+                <strong>CI / CD</strong>
+                <p className="muted">{platformStack.cicd}</p>
               </div>
-            )}
-            {platform === "Android Native" && (
-              <div className="plat-grid">
-                <div><strong>Recommended stack</strong><p className="muted">Kotlin, Coroutines, Jetpack Compose</p></div>
-                <div><strong>CI / CD</strong><p className="muted">CircleCI, Gradle Play Publisher</p></div>
-                <div><strong>Testing</strong><p className="muted">Espresso, Robolectric</p></div>
+              <div>
+                <strong>Testing</strong>
+                <p className="muted">{platformStack.testing}</p>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </section>
 
       {/* SHOWCASE / CASE STUDIES */}
-      <section className="ad-showcase" id="showcase" ref={portfolioRef}>
+      <section className="ad-showcase" id="showcase">
         <div className="container">
           <h2>Selected app work</h2>
           <div className="showcase-grid">
-            {showcases.map(s => (
-              <article className="case" key={s.id} onClick={() => setLightbox(s)} tabIndex={0} role="button">
+            {showcases.map((s) => (
+              <article
+                className="case"
+                key={s._id}
+                onClick={() => setLightbox(s)}
+                tabIndex={0}
+                role="button"
+              >
                 <div className="case-media">
-                  <img src={s.img} alt={s.title} />
+                  <img src={`${API_URL}${s.image}`} alt={s.title} />
                 </div>
                 <div className="case-body">
                   <h3>{s.title}</h3>
                   <p className="muted">{s.summary}</p>
                   <div className="tags">
-                    {s.bullets.map((b,i) => <span key={i} className="tag">{b}</span>)}
+                    {s.bullets.map((b, i) => (
+                      <span key={i} className="tag">
+                        {b}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </article>
@@ -221,84 +290,116 @@ export default function AppDevelopment() {
       {/* LIGHTBOX */}
       {lightbox && (
         <div className="ad-lightbox" onClick={() => setLightbox(null)}>
-          <div className="ad-lightbox__card" onClick={(e)=>e.stopPropagation()}>
-            <button className="close" onClick={() => setLightbox(null)}>✕</button>
-            <img src={lightbox.img} alt={lightbox.title} />
+          <div
+            className="ad-lightbox__card"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button className="close" onClick={() => setLightbox(null)}>
+              ✕
+            </button>
+            <img src={`${API_URL}${lightbox.image}`} alt={lightbox.title} />
             <h3>{lightbox.title}</h3>
             <p>{lightbox.summary}</p>
             <ul>
-              {lightbox.bullets.map((b,i)=>(<li key={i}>{b}</li>))}
+              {lightbox.bullets.map((b, i) => (
+                <li key={i}>{b}</li>
+              ))}
             </ul>
             <div className="actions">
-              <a className="btn primary" href="#contact">Start Similar App</a>
-              <a className="btn ghost" href="#contact">Ask about architecture</a>
+              <a className="btn primary" href="#contact-form">
+                Start Similar App
+              </a>
+              <a className="btn ghost" href="#contact-form">
+                Ask about architecture
+              </a>
             </div>
           </div>
         </div>
       )}
 
-      {/* CI/CD + Quality */}
+      {/* CI/CD + Quality (static section) */}
       <section className="ad-quality">
         <div className="container">
           <h2>Quality, CI/CD & Monitoring</h2>
           <div className="quality-grid">
             <div className="q">
               <h3>Automated Pipelines</h3>
-              <p className="muted">GitHub Actions / Bitrise for builds, tests & distribution.</p>
+              <p className="muted">
+                GitHub Actions / Bitrise for builds, tests & distribution.
+              </p>
             </div>
             <div className="q">
               <h3>Observability</h3>
-              <p className="muted">Sentry, Crashlytics and performance monitoring integrated.</p>
+              <p className="muted">
+                Sentry, Crashlytics and performance monitoring integrated.
+              </p>
             </div>
             <div className="q">
               <h3>Release Strategy</h3>
-              <p className="muted">Phased rollouts, feature flags & canary releases.</p>
+              <p className="muted">
+                Phased rollouts, feature flags & canary releases.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* TESTIMONIALS */}
-      <section className="ad-testimonials">
-        <div className="container">
-          <h2>Clients</h2>
-          <div className="test-cards">
-            <div className="test-card">
-              <p className="quote">“{testimonials[activeTest].quote}”</p>
-              <div className="author"><strong>{testimonials[activeTest].name}</strong><span className="muted"> — {testimonials[activeTest].role}</span></div>
-            </div>
-            <div className="dots">
-              {testimonials.map((t,i)=>(
-                <button key={t.id} className={`dot ${i===activeTest?'active':''}`} onClick={()=>setActiveTest(i)} aria-label={`testimonial ${i+1}`}></button>
-              ))}
+      {testimonials.length > 0 && (
+        <section className="ad-testimonials">
+          <div className="container">
+            <h2>Clients</h2>
+            <div className="test-cards">
+              <div className="test-card">
+                <p className="quote">“{testimonials[activeTest].quote}”</p>
+                <div className="author">
+                  <strong>{testimonials[activeTest].name}</strong>
+                  <span className="muted">
+                    {" "}
+                    — {testimonials[activeTest].title}
+                  </span>
+                </div>
+              </div>
+              <div className="dots">
+                {testimonials.map((t, i) => (
+                  <button
+                    key={t._id}
+                    className={`dot ${i === activeTest ? "active" : ""}`}
+                    onClick={() => setActiveTest(i)}
+                    aria-label={`testimonial ${i + 1}`}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* PRICING */}
       <section className="ad-pricing">
         <div className="container">
           <h2>Packages</h2>
           <div className="pricing-grid">
-            <div className="pack">
-              <h3>Prototype</h3>
-              <div className="price">KES 40k</div>
-              <ul><li>Clickable prototype</li><li>1 platform</li><li>2-week turnaround</li></ul>
-              <a className="btn primary" href="#contact">Start Prototype</a>
-            </div>
-            <div className="pack featured">
-              <h3>Product</h3>
-              <div className="price">KES 150k</div>
-              <ul><li>Cross-platform app</li><li>Backend & Auth</li><li>3 months support</li></ul>
-              <a className="btn primary" href="#contact">Start Product</a>
-            </div>
-            <div className="pack">
-              <h3>Scale</h3>
-              <div className="price">Custom</div>
-              <ul><li>Dedicated team</li><li>SLAs</li><li>Enterprise integrations</li></ul>
-              <a className="btn ghost" href="#contact">Contact Sales</a>
-            </div>
+            {pricingPlans.map((pack) => (
+              <div
+                key={pack._id}
+                className={`pack ${pack.featured ? "featured" : ""}`}
+              >
+                <h3>{pack.name}</h3>
+                <div className="price">{pack.price}</div>
+                <ul>
+                  {pack.features.map((f, idx) => (
+                    <li key={idx}>{f}</li>
+                  ))}
+                </ul>
+                <a
+                  className={`btn ${pack.buttonVariant || "primary"}`}
+                  href="#contact-form"
+                >
+                  {pack.buttonText || "Get Started"}
+                </a>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -307,22 +408,70 @@ export default function AppDevelopment() {
       <section className="ad-faq">
         <div className="container">
           <h2>FAQ</h2>
-          <details><summary>How long does app development take?</summary><p className="muted">Typical MVP 6–10 weeks depending on scope.</p></details>
-          <details><summary>Do you publish to app stores?</summary><p className="muted">Yes — we handle builds, assets and submission support.</p></details>
-          <details><summary>Do you provide support?</summary><p className="muted">Monthly maintenance & monitoring packages available.</p></details>
+          {faqs.map((faq) => (
+            <details key={faq._id}>
+              <summary>{faq.question}</summary>
+              <p className="muted">{faq.answer}</p>
+            </details>
+          ))}
         </div>
       </section>
 
-      {/* STICKY CTA */}
-      <aside className="ad-cta" id="contact">
-        <div className="container cta-wrap">
-          <div>
-            <strong>Ready to build your app?</strong>
-            <p className="muted">Book a discovery call and get a project blueprint.</p>
-          </div>
-          <a className="btn primary" href="#contact">Book Call</a>
+      {/* CONTACT FORM - ADD THIS */}
+      <section className="ad-contact-form" id="contact-form">
+        <div className="container">
+          <h2>Start Your Project</h2>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const data = Object.fromEntries(formData);
+
+              try {
+                const response = await fetch(`${API_URL}/api/contact/message`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                  alert("Message sent successfully! We will contact you soon.");
+                  e.target.reset();
+                } else {
+                  alert("Error sending message. Please try again.");
+                }
+              } catch (error) {
+                console.error("Error:", error);
+                alert("Error sending message. Please try again.");
+              }
+            }}
+          >
+            <input type="text" name="name" placeholder="Your Name" required />
+            <input
+              type="email"
+              name="email"
+              placeholder="Your Email"
+              required
+            />
+            <input type="tel" name="phone" placeholder="Phone Number" />
+            <select name="projectType" required>
+              <option value="app">App Development</option>
+              <option value="web">Web Development</option>
+              <option value="both">Both</option>
+            </select>
+            <input type="text" name="budget" placeholder="Budget Range" />
+            <textarea
+              name="message"
+              placeholder="Tell us about your project"
+              rows="5"
+              required
+            ></textarea>
+            <button type="submit" className="btn primary">
+              Send Message
+            </button>
+          </form>
         </div>
-      </aside>
+      </section>
     </main>
   );
 }
