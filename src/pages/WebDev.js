@@ -30,7 +30,7 @@ function useCount(target, duration = 1400) {
   return value;
 }
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const API_URL = process.env.REACT_APP_API_URL || "https://bavdev-back.onrender.com";
 
 export default function WebDevelopment() {
   const [features, setFeatures] = useState([]);
